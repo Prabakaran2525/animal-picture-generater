@@ -1,0 +1,19 @@
+!pip install transformers diffusers accelerate torch torchvision pillow --quiet
+from diffusers import AutoPipelineForText2Image
+import torch
+from PIL import Image
+from google.colab import files
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+pipe = AutoPipelineForText2Image.from_pretrained(
+    "runwayml/stable-diffusion-v1-5",
+    torch_dtype=torch.float16 if device=="cuda" else torch.float32
+).to(device)
+
+animal = input("Enter an animal name: ")
+prompt = f"A high quality realistic photo of a {animal}"
+image = pipe(prompt).images[0]
+image.save("generated_animal.png")
+
+Image.open("generated_animal.png").show()
+files.download("generated_animal.png")
